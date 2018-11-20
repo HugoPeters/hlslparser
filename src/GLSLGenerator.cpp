@@ -1148,6 +1148,21 @@ void GLSLGenerator::OutputBuffer(int indent, HLSLBuffer* buffer)
 
         m_writer.WriteLineTagged(indent, buffer->fileName, buffer->line, "uniform vec4 %s%s[%d];", m_options.constantBufferPrefix, buffer->name, uniformSize);
     }
+    else if (m_options.flags & Flag_UseUniformsForConstantBuffers)
+    {
+        m_writer.WriteLine(indent, "// %s", buffer->name);
+
+        HLSLDeclaration* field = buffer->field;
+        while (field != NULL)
+        {
+            m_writer.BeginLine(indent, field->fileName, field->line);
+            m_writer.Write("%s", "uniform ");
+            OutputDeclaration(field->type, field->name);
+            m_writer.Write(";");
+            m_writer.EndLine();
+            field = (HLSLDeclaration*)field->nextStatement;
+        }
+    }
     else
     {
         m_writer.WriteLineTagged(indent, buffer->fileName, buffer->line, "layout (std140) uniform %s%s {", m_options.constantBufferPrefix, buffer->name);
@@ -1875,6 +1890,9 @@ const char* GLSLGenerator::GetBuiltInSemantic(const char* semantic, AttributeMod
     if (m_target == Target_VertexShader && modifier == AttributeModifier_Out && String_Equal(semantic, "SV_Position"))
         return "gl_Position";
 
+    if (m_target == Target_VertexShader && modifier == AttributeModifier_Out && String_Equal(semantic, "SV_POSITION"))
+        return "gl_Position";
+
     if (m_target == Target_VertexShader && modifier == AttributeModifier_Out && String_Equal(semantic, "PSIZE"))
         return "gl_PointSize";
 
@@ -1887,6 +1905,9 @@ const char* GLSLGenerator::GetBuiltInSemantic(const char* semantic, AttributeMod
     if (m_target == Target_FragmentShader && modifier == AttributeModifier_In && String_Equal(semantic, "SV_Position"))
         return "gl_FragCoord";
 
+    if (m_target == Target_FragmentShader && modifier == AttributeModifier_In && String_Equal(semantic, "SV_POSITION"))
+        return "gl_FragCoord";
+
     if (m_target == Target_FragmentShader && modifier == AttributeModifier_Out)
     {
         int index = -1;
@@ -1894,6 +1915,8 @@ const char* GLSLGenerator::GetBuiltInSemantic(const char* semantic, AttributeMod
         if (strncmp(semantic, "COLOR", 5) == 0)
             index = atoi(semantic + 5);
         else if (strncmp(semantic, "SV_Target", 9) == 0)
+            index = atoi(semantic + 9);
+        else if (strncmp(semantic, "SV_TARGET", 9) == 0)
             index = atoi(semantic + 9);
 
         if (index >= 0)

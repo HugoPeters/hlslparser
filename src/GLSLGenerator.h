@@ -41,6 +41,7 @@ public:
         Flag_EmulateConstantBuffer = 1 << 1,
         Flag_PackMatrixRowMajor = 1 << 2,
         Flag_LowerMatrixMultiplication = 1 << 3,
+        Flag_UseUniformsForConstantBuffers = 1 << 4,
     };
 
     struct Options

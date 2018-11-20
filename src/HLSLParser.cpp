@@ -536,6 +536,7 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4x4, HLSLBaseType_Float4 ),
         Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float4x3 ),
         Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float4, HLSLBaseType_Float4x2 ),
+        Intrinsic( "mul", HLSLBaseType_Float4x4, HLSLBaseType_Float4x4, HLSLBaseType_Float4x4),
 
 		Intrinsic( "transpose", HLSLBaseType_Float2x2, HLSLBaseType_Float2x2 ),
         Intrinsic( "transpose", HLSLBaseType_Float3x3, HLSLBaseType_Float3x3 ),
@@ -3736,6 +3737,37 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
         else
         {
             m_tokenizer.Error("Undeclared identifier '%s'", name);
+        }
+    }
+    else
+    {
+        // [hpeters]: if the function is not an exact match, throw a warning...
+        int* functionRanks = static_cast<int*>(alloca(sizeof(int) * numArguments));
+
+        if (!GetFunctionCallCastRanks(m_tree, functionCall, matchedFunction, functionRanks))
+        {
+            m_tokenizer.Error("You should not be here");
+        }
+        else
+        {
+            int numMatchedArguments = 0;
+
+            for (int i = 0; i < numArguments; ++i)
+                if (functionRanks[i] == 0)
+                    ++numMatchedArguments;
+
+            if (numMatchedArguments != numArguments)
+            {
+                m_tokenizer.Warning("'%s' an overload will be used as %d/%d arguments match, casting:", matchedFunction->name, numMatchedArguments, numArguments);
+
+                const HLSLExpression* argumentIn = functionCall->argument;
+                const HLSLArgument* argumentOut = matchedFunction->argument;
+                
+                for (int i = 0; i < numArguments; ++i)
+                {
+                    m_tokenizer.Warning("Arg %d: %s --> %s", i + 1, GetTypeName(argumentIn->expressionType), GetTypeName(argumentOut->type));
+                }
+            }
         }
     }
 

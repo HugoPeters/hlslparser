@@ -22,6 +22,10 @@
 #define ASSERT(...)
 #define assert(...)
 
+#ifdef HLSLPARSER_WARLOCK
+#include <CL_Log.h>
+#endif
+
 namespace M4 {
 
 
@@ -58,8 +62,14 @@ int String_ToInteger(const char * str, char ** end);
 // Engine/Log.h
 
 void Log_Error(const char * format, ...);
-void Log_ErrorArgList(const char * format, va_list args);
 
+void Log_Warning(const char * format, ...);
+
+#ifdef HLSLPARSER_WARLOCK
+void Log_ErrorArgList(const char * format, va_list args, CL_LogSeverity severity = LOGLVL_ERROR);
+#else
+void Log_ErrorArgList(const char * format, va_list args);
+#endif
 
 // Engine/Array.h
 

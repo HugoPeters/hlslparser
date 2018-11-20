@@ -5,7 +5,6 @@
 #include <string.h> // strcmp, strcasecmp
 #include <stdlib.h>	// strtod, strtol
 
-
 namespace M4 {
 
 // Engine/String.cpp
@@ -82,7 +81,30 @@ void Log_Error(const char * format, ...) {
     va_end(args);
 }
 
-void Log_ErrorArgList(const char * format, va_list args) {
+void Log_Warning(const char * format, ...)
+{
+    va_list args;
+    va_start(args, format);
+#ifdef HLSLPARSER_WARLOCK
+    Log_ErrorArgList(format, args, CL_LogSeverity::LOGLVL_WARNING);
+#else
+    Log_ErrorArgList(format, args);
+#endif
+    va_end(args);
+}
+
+#ifdef HLSLPARSER_WARLOCK
+void Log_ErrorArgList(const char * format, va_list args, CL_LogSeverity severity)
+{
+    va_list tmp;
+    va_copy(tmp, args);
+    CL_Logger::LogStatic(severity, CAT_RENDER, CL_LogMessage::FromFormatList(format, __FILE__, __LINE__, tmp));
+    va_end(tmp);
+}
+#else
+
+void Log_ErrorArgList(const char * format, va_list args) 
+{
 #if 1 // @@ Don't we need to do this?
     va_list tmp;
     va_copy(tmp, args);
@@ -92,7 +114,7 @@ void Log_ErrorArgList(const char * format, va_list args) {
     vprintf( format, args );
 #endif
 }
-
+#endif
 
 // Engine/StringPool.cpp
 

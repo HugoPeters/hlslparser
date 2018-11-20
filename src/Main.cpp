@@ -1,3 +1,5 @@
+#ifdef HLSLPARSER_MAIN
+
 #include "HLSLParser.h"
 
 #include "GLSLGenerator.h"
@@ -167,3 +169,5 @@ int main( int argc, char* argv[] )
 
 	return 0;
 }
+
+#endif

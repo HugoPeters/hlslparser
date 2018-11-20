@@ -139,6 +139,8 @@ public:
     is included. Only the first error reported will be output. */
     void Error(const char* format, ...);
 
+    void Warning(const char* format, ...);
+
     /** Gets a human readable text description of the specified token. */
     static void GetTokenName(int token, char buffer[s_maxIdentifier]);
 
