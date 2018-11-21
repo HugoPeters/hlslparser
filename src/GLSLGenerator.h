@@ -73,7 +73,7 @@ private:
     void OutputExpression(HLSLExpression* expression, const HLSLType* dstType = NULL);
     void OutputIdentifier(const char* name);
     void OutputArguments(HLSLArgument* argument);
-    
+
     /**
      * If the statements are part of a function, then returnType can be used to specify the type
      * that a return statement is expected to produce so that correct casts will be generated.
@@ -118,7 +118,17 @@ private:
     const char* GetBuiltInSemantic(const char* semantic, AttributeModifier modifier, int* outputIndex = 0);
     const char* GetAttribQualifier(AttributeModifier modifier);
 
+    bool CreateVariableMappings();
+
 private:
+
+    struct SafeGLSLVarNameMapping
+    {
+        const char* mSourceName;
+        const char* mTargetName;
+    };
+
+    vector<SafeGLSLVarNameMapping> mVarNameMap;
 
     static const int    s_numReservedWords = 7;
     static const char*  s_reservedWord[s_numReservedWords];

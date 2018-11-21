@@ -165,6 +165,8 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 
 	ChooseUniqueName( "bvecTernary", m_bvecTernary, sizeof( m_bvecTernary ) );
 
+    CreateVariableMappings();
+
     if (target == Target_VertexShader)
     {
         m_inAttribPrefix  = "";
@@ -993,7 +995,7 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             if (declaration->type.baseType != HLSLBaseType_Texture)
             {
                 m_writer.BeginLine(indent, declaration->fileName, declaration->line);
-                if (indent == 0)
+                if (indent == 0 && (declaration->type.flags & HLSLTypeFlag_Static) == 0)
                 {
                     // At the top level, we need the "uniform" keyword.
                     m_writer.Write("uniform ");
@@ -1551,6 +1553,44 @@ const char* GLSLGenerator::GetAttribQualifier(AttributeModifier modifier)
     }
 }
 
+bool GLSLGenerator::CreateVariableMappings()
+{
+    HLSLRoot* root = m_tree->GetRoot();
+    HLSLStatement* statement = root->statement;
+
+    while (statement != NULL)
+    {
+        if (statement->nodeType == HLSLNodeType_Declaration)
+        {
+            HLSLDeclaration* declaration = (HLSLDeclaration*)statement;
+
+            if (declaration->type.baseType == HLSLBaseType_Sampler2D)
+            {
+                int reg = -1;
+                if (declaration->registerName != NULL)
+                    sscanf(declaration->registerName, "s%d", &reg);
+                else
+                {
+                    Log_Error("'%s' expected a register (\": register(s0))", declaration->name);
+                    return false;
+                }
+
+                const char* newName = m_tree->AddStringFormat("tex_Slot%i", reg);
+
+                SafeGLSLVarNameMapping map;
+                map.mSourceName = declaration->name;
+                map.mTargetName = newName;
+
+                mVarNameMap.push_back(map);
+            }
+        }
+
+        statement = statement->nextStatement;
+    }
+
+    return true;
+}
+
 void GLSLGenerator::OutputAttribute(const HLSLType& type, const char* semantic, AttributeModifier modifier)
 {
     const char* qualifier = GetAttribQualifier(modifier);
@@ -1809,6 +1849,11 @@ void GLSLGenerator::OutputDeclaration(const HLSLType& type, const char* name)
 
 void GLSLGenerator::OutputDeclarationType( const HLSLType& type )
 {
+    if ((type.flags & HLSLTypeFlag_Const) && (type.flags & HLSLTypeFlag_Static))
+    {
+        m_writer.Write("const ");
+    }
+
 	m_writer.Write( "%s ", GetTypeName( type ) );
 }
 
@@ -1863,6 +1908,15 @@ const char* GLSLGenerator::GetSafeIdentifierName(const char* name) const
             return m_reservedWord[i];
         }
     }
+
+    for (int i = 0; i < int(mVarNameMap.size()); ++i)
+    {
+        if (String_Equal(mVarNameMap[i].mSourceName, name))
+        {
+            return mVarNameMap[i].mTargetName;
+        }
+    }
+
     return name;
 }
 
