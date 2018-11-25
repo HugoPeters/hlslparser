@@ -1152,7 +1152,7 @@ void GLSLGenerator::OutputBuffer(int indent, HLSLBuffer* buffer)
     }
     else if (m_options.flags & Flag_UseUniformsForConstantBuffers)
     {
-        m_writer.WriteLine(indent, "// %s", buffer->name);
+        //m_writer.WriteLine(indent, "// %s", buffer->name);
 
         HLSLDeclaration* field = buffer->field;
         while (field != NULL)
