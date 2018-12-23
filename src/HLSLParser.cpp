@@ -3758,14 +3758,18 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
 
             if (numMatchedArguments != numArguments)
             {
-                m_tokenizer.Warning("'%s' an overload will be used as %d/%d arguments match, casting:", matchedFunction->name, numMatchedArguments, numArguments);
+                bool isMatching = true;
 
-                const HLSLExpression* argumentIn = functionCall->argument;
-                const HLSLArgument* argumentOut = matchedFunction->argument;
+               // m_tokenizer.Warning("'%s' an overload will be used as %d/%d arguments match, casting:", matchedFunction->name, numMatchedArguments, numArguments);
+
+                HLSLExpression* argumentIn = functionCall->argument;
+                HLSLArgument* argumentOut = matchedFunction->argument;
                 
-                for (int i = 0; i < numArguments; ++i)
+                for (int i = 0; i < numArguments && argumentIn && argumentOut; ++i)
                 {
-                    m_tokenizer.Warning("Arg %d: %s --> %s", i + 1, GetTypeName(argumentIn->expressionType), GetTypeName(argumentOut->type));
+                    //m_tokenizer.Warning("Arg %d: %s --> %s", i + 1, GetTypeName(argumentIn->expressionType), GetTypeName(argumentOut->type));
+                    argumentIn = argumentIn->nextExpression;
+                    argumentOut = argumentOut->nextArgument;
                 }
             }
         }

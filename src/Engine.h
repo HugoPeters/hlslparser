@@ -19,8 +19,10 @@
 
 // Engine/Assert.h
 
+#ifndef assert
 #define ASSERT(...)
 #define assert(...)
+#endif
 
 #ifdef HLSLPARSER_WARLOCK
 #include <CL_Log.h>
