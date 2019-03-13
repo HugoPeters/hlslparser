@@ -406,10 +406,12 @@ struct HLSLDeclaration : public HLSLStatement
         nextDeclaration = NULL;
         assignment      = NULL;
         buffer          = NULL;
+        isUserRegister  = false;
     }
     const char*         name;
     HLSLType            type;
     const char*         registerName;       // @@ Store register index?
+    bool                isUserRegister;
     const char*         semantic;
     HLSLDeclaration*    nextDeclaration;    // If multiple variables declared on a line.
     HLSLExpression*     assignment;
@@ -456,10 +458,12 @@ struct HLSLBuffer : public HLSLStatement
         name            = NULL;
         registerName    = NULL;
         field           = NULL;
+        isUserRegister  = false;
     }
     const char*         name;
     const char*         registerName;
     HLSLDeclaration*    field;
+    bool                isUserRegister;
 };
 
 

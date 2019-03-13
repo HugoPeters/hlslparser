@@ -229,10 +229,10 @@ bool HLSLGenerator::Generate(HLSLTree* tree, Target target, const char* entryNam
                     if (field->semantic) {
 						field->hidden = false;
 
-						if (target == Target_PixelShader && !output && String_EqualNoCase(field->semantic, "POSITION")) {
-							ASSERT(String_EqualNoCase(field->sv_semantic, "SV_Position"));
-							field->hidden = true;
-						}
+                        if (target == Target_PixelShader && !output && String_EqualNoCase(field->semantic, "POSITION")) {
+                            ASSERT(String_EqualNoCase(field->sv_semantic, "SV_Position"));
+                            field->hidden = true;
+                        }
 
                         field->sv_semantic = TranslateSemantic(field->semantic, output, target);
                     }
