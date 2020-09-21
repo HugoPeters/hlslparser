@@ -1581,7 +1581,7 @@ bool GLSLGenerator::CreateVariableMappings()
                 map.mSourceName = declaration->name;
                 map.mTargetName = newName;
 
-                mVarNameMap.push_back(map);
+                //mVarNameMap.push_back(map);
             }
         }
 
