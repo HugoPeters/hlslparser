@@ -486,6 +486,8 @@ const Intrinsic _intrinsic[] =
 
         INTRINSIC_FLOAT2_FUNCTION( "fmod" ),
 
+        Intrinsic("modf", HLSLBaseType_Float,  HLSLBaseType_Float, HLSLBaseType_Float),
+
         Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Float    ),
         Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Float2   ),
         Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Float3   ),

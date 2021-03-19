@@ -1608,6 +1608,28 @@ void GLSLGenerator::OutputAttribute(const HLSLType& type, const char* semantic, 
         {
             if (field->semantic != NULL && GetBuiltInSemantic(field->semantic, modifier) == NULL)
             {
+                // Interpolation modifiers.
+                if (field->type.flags & HLSLTypeFlag_Centroid)
+                {
+                    Error("GLSL does not support Centroid interpolation modifier");
+                }
+                if (field->type.flags & HLSLTypeFlag_Linear)
+                {
+                    Error("GLSL does not support Linear interpolation modifier");
+                }
+                if (field->type.flags & HLSLTypeFlag_NoInterpolation)
+                {
+                    m_writer.Write("flat ");
+                }
+                if (field->type.flags & HLSLTypeFlag_NoPerspective)
+                {
+                    m_writer.Write("noperspective ");
+                }
+                if (field->type.flags & HLSLTypeFlag_Sample)
+                {
+                    Error("GLSL does not support Sample interpolation modifier");
+                }
+
                 m_writer.Write( "%s ", qualifier );
 				char attribName[ 64 ];
 				String_Printf( attribName, 64, "%s%s", prefix, field->semantic );
