@@ -1931,7 +1931,7 @@ const char* GLSLGenerator::GetSafeIdentifierName(const char* name) const
         }
     }
 
-    for (int i = 0; i < int(mVarNameMap.size()); ++i)
+    for (int i = 0; i < mVarNameMap.Count(); ++i)
     {
         if (String_Equal(mVarNameMap[i].mSourceName, name))
         {

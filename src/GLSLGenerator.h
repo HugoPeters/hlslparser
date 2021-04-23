@@ -12,6 +12,7 @@
 
 #include "CodeWriter.h"
 #include "HLSLTree.h"
+#include "C_Vector.h"
 
 namespace M4
 {
@@ -128,7 +129,7 @@ private:
         const char* mTargetName;
     };
 
-    vector<SafeGLSLVarNameMapping> mVarNameMap;
+    C_Vector<SafeGLSLVarNameMapping> mVarNameMap;
 
     static const int    s_numReservedWords = 7;
     static const char*  s_reservedWord[s_numReservedWords];
