@@ -74,6 +74,7 @@ static const char* GetTypeName(const HLSLType& type)
     case HLSLBaseType_Sampler2D:    return "sampler2D";
     case HLSLBaseType_Sampler3D:    return "sampler3D";
     case HLSLBaseType_SamplerCube:  return "samplerCube";
+    case HLSLBaseType_Sampler2DShadow:  return "sampler2DShadow";
     case HLSLBaseType_Sampler2DMS:  return "sampler2DMS";
     case HLSLBaseType_Sampler2DArray:  return "sampler2DArray";
     case HLSLBaseType_UserDefined:  return type.typeName;
@@ -293,6 +294,13 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         }
 
         m_writer.WriteLine(0, "vec4 %s(sampler2D samp, vec2 texCoord, vec2 dx, vec2 dy) { return %s(samp, texCoord, dx, dy);  }", m_tex2DgradFunction, function);
+    }
+
+    // special function for tex2Dcmp for shadows
+    if (m_tree->NeedsFunction("tex2Dcmp"))
+    {
+        const char* function = "texture";
+        m_writer.WriteLine(0, "vec4 tex2Dcmp(sampler2DShadow samp, vec4 coord) { float x = %s(samp, coord.xyz); return vec4(x);  }", function);
     }
 
     // Output the special function used to emulate tex2Dbias.
